@@ -1,7 +1,7 @@
 # Descargar Repo
 
 ```bash
-$ git clone --recurse-submodules "https://github.com/niconielsen24/lab_odc/tree/main.git"
+$ git clone --recurse-submodules "https://github.com/niconielsen24/lab_odc.git"
 ```
 
 # Lab Org. y Arq. de Computadoras
