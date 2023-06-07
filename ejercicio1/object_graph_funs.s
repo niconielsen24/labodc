@@ -182,8 +182,8 @@ paint_sky_night:
 
     bl background_paint
 
-    movz w10,#0x0043,lsl 16
-    movk w10,#0x3b57
+    movz w10,#0x004e,lsl 16
+    movk w10,#0x3f2d
 
     bl upper_half
 

@@ -16740,8 +16740,8 @@ Disassembly of section .text:
    90480:	52a0032a 	mov	w10, #0x190000              	// #1638400
    90484:	7283232a 	movk	w10, #0x1919
    90488:	97ffff25 	bl	9011c <background_paint>
-   9048c:	52a0086a 	mov	w10, #0x430000              	// #4390912
-   90490:	72876aea 	movk	w10, #0x3b57
+   9048c:	52a009ca 	mov	w10, #0x4e0000              	// #5111808
+   90490:	7287e5aa 	movk	w10, #0x3f2d
    90494:	97ffff0d 	bl	900c8 <upper_half>
    90498:	52a0032a 	mov	w10, #0x190000              	// #1638400
    9049c:	7283232a 	movk	w10, #0x1919
@@ -17481,8 +17481,8 @@ Disassembly of section .text:
    90df4:	52a0032a 	mov	w10, #0x190000              	// #1638400
    90df8:	7283232a 	movk	w10, #0x1919
    90dfc:	97ffff25 	bl	90a90 <background_paint>
-   90e00:	52a0086a 	mov	w10, #0x430000              	// #4390912
-   90e04:	72876aea 	movk	w10, #0x3b57
+   90e00:	52a009ca 	mov	w10, #0x4e0000              	// #5111808
+   90e04:	7287e5aa 	movk	w10, #0x3f2d
    90e08:	97ffff0d 	bl	90a3c <upper_half>
    90e0c:	52a0032a 	mov	w10, #0x190000              	// #1638400
    90e10:	7283232a 	movk	w10, #0x1919
