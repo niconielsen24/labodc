@@ -22,15 +22,18 @@ main:
 	lsr x5,x5,1					// centro Y
 	lsr x6,x6,1					// centro X
 
-	
+	//mov w10,0xffff
+	//mov x16,0                       // inicio lineas coord. X 
+	//mov x20,640                     // fin lineas coord. X
+    //mov x15,240                     // altura inixial lineas
 
-	//bl paint_line_hr
+	//bl paint_line_hr			//--- test, para que funcione hay que descomentar graph_funs y los 4 mov de arriba (tambien comentar object_graph_funs )
 
-	//bl paint_sky_day
+	bl paint_sky_day			//--- paint_sky_day y paint_sky_night son mutualmente exclusivas, una pisa a la otra
 
-	//bl paint_sun
+	bl paint_sun				//--- paint_sun anda junto con cualquiera de las 2, solo hay que llamarla despues (eventualmente una para la luna va a ser parecida) 
 
-	bl paint_sky_night
+	//bl paint_sky_night			//--- paint_sky_day y paint_sky_night son mutualmente exclusivas, una pisa a la otra
 
 leo_gpio:
 	movz x10,0xE100
