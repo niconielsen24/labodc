@@ -1,4 +1,4 @@
-	.include "graph_funs.s"
+	//.include "graph_funs.s"
 	.include "object_graph_funs.s"
 	.equ SCREEN_WIDTH,   640
 	.equ SCREEN_HEIGH,   480
@@ -15,9 +15,6 @@ main:
 	mov x23, x0 // Guarda la dirección base del framebuffer en x20
 	//---------------- CODE HERE ------------------------------------
 
-	movz w10,#0x0000,lsl 16     // color
-    movk w10,#0x0000            // color
-
 	mov x5, SCREEN_HEIGH
 	mov x6, SCREEN_WIDTH
 	mov x7, #100				// radio
@@ -25,19 +22,15 @@ main:
 	lsr x5,x5,1					// centro Y
 	lsr x6,x6,1					// centro X
 
-	bl background_paint			// Colorea el fondo completo del color en el reg. w10
+	
 
-	mov x2, SCREEN_HEIGH		//  \        
-    mov x1, SCREEN_WIDTH		//   |=> Retorno a estados originales para uso por otros procedimientos
-    mov x0,x23					//  /
+	//bl paint_line_hr
 
-	bl paint_circle				// colorea un circulo centro (x5,x6) de radio = x7, con el color en w11
+	//bl paint_sky_day
 
-	mov x2, SCREEN_HEIGH        //  \
-    mov x1, SCREEN_WIDTH		//   |=> Retorno a estados originales para uso por otros procedimientos
-    mov x0,x23					//  /
+	//bl paint_sun
 
-
+	bl paint_sky_night
 
 leo_gpio:
 	movz x10,0xE100
