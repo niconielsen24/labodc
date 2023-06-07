@@ -1,6 +1,6 @@
 *.o
 *.elf
 *img
-kernel.list
+kernel8.list
 *.txt
 .gdb_history
