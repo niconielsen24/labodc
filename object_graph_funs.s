@@ -11,7 +11,7 @@
     //
     // por alguna razon no lo puedo hacer andar con un loop
 paint_sun:
-    sub sp,sp,#32                   // mem alloc
+    sub sp,sp,#64                   // mem alloc
     
     str lr,[sp]                     // push to sp (stack pointer)
     str x5,[sp,#8]                  // push to sp x5 = Y
@@ -57,7 +57,7 @@ paint_sun:
     ldr x8,[sp,#32]                 // pop from sp
     ldr x10,[sp,#40]                // pop from sp
     
-    add sp,sp,#32
+    add sp,sp,#64
     ret
     //----------------------------------------------- end paint_sun 
 

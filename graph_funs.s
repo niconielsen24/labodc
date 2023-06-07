@@ -66,7 +66,7 @@ loop0:
 
     //----------------------------------------------- paint circle
 paint_circle:
-    sub sp,sp,#32                   // mem alloc
+    sub sp,sp,#64                   // mem alloc
 
     str lr,[sp]
     str x8,[sp,#8]
@@ -106,7 +106,7 @@ cont_crc:
     ldr x0,[sp,#40]  
 
 
-    add sp,sp,#32                   // free mem
+    add sp,sp,#64                   // free mem
     ret
     //----------------------------------------------- end paint circle
 

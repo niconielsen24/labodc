@@ -73,7 +73,7 @@ loop_delay1:
 	b leo_gpio
 paint_circ:
 	movz w11,0x0000
-	bl paint_circle
+	bl paint_sky_night
 	// si w11 es 0 entonces el GPIO 1 estaba liberado
 	// de lo contrario será distinto de 0, (en este caso particular 2)
 	// significando que el GPIO 1 fue presionado
