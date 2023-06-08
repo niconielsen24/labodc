@@ -38,8 +38,8 @@ loop_delay0:								// 	 }	Loop de delay
 
 	ldr w22, [x21,GPIO_GPLEV0]				// Lee el estado de los GPIO 0 - 31
 
-	and w22,w22,0b00000001					// aisla el pin 1, que por alguna razon es la F en mi teclado, ingles US
-	cbnz w22, paint_circ					// si se presiona la tecla el circulo cambia a negro
+	and w22,w22,0x00000001					// aisla el pin 1, que por alguna razon es la F en mi teclado, ingles US
+	cbnz w22, paint_dia_noche				// si se presiona la tecla el circulo cambia a negro
 
 	movz x10,0xE100							// \
 	movk x10,0x05f5 ,lsl 16					//  \
@@ -48,12 +48,30 @@ loop_delay1:								//   } Loop de delay
 	b.ne loop_delay1						// /
 	b leo_gpio								// si no se detecta un cambio en w22 se regresa a leo_gpio
 
-paint_circ:
+paint_dia_noche:
+
+noche:
+	cbnz x1, dia
+
 	bl paint_sky_night
 	bl paint_moon
 	bl fore_ground
 	bl paint_casita
 
+	mov x1,1
+
+	b leo_gpio
+
+dia:
+
+	bl paint_sky_day
+	bl paint_sun
+	bl fore_ground
+	bl paint_casita
+
+	mov x1,0
+
+	b leo_gpio
 	//---------------------------------------------------------------
 	// Infinite Loop
 InfLoop:
