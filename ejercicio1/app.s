@@ -23,6 +23,12 @@ main:
 
 	bl paint_casita
 
+	// GPIO config set
+	
+	mov x21, GPIO_BASE						// --self explanatory--
+
+	str wzr, [x21, GPIO_GPFSEL0]			// Setea gpios 0 - 9 como lectura
+
 	// GPIO read loop
 	//
 leo_gpio:									// si no se lee ningun input en el pin 1 se regresa a esta linea
@@ -32,20 +38,16 @@ loop_delay0:								// 	 }	Loop de delay
 	subs x10,x10,#1							//  /
 	b.ne loop_delay0						// /
 
-	mov x21, GPIO_BASE						// --self explanatory--
-
-	str wzr, [x21, GPIO_GPFSEL0]			// Setea gpios 0 - 9 como lectura
-
 	ldr w22, [x21,GPIO_GPLEV0]				// Lee el estado de los GPIO 0 - 31
 
 	and w22,w22,0x00000001					// aisla el pin 1, que por alguna razon es la F en mi teclado, ingles US
 	cbnz w22, paint_dia_noche				// si se presiona la tecla el circulo cambia a negro
 
-	movz x10,0xE100							// \
-	movk x10,0x05f5 ,lsl 16					//  \
-loop_delay1:								//   } Loop de delay
-	subs x10,x10,#1 						//  /
-	b.ne loop_delay1						// /
+//	movz x10,0xE100							// \
+//	movk x10,0x05f5 ,lsl 16					//  \
+//loop_delay1:								//   } Loop de delay
+//	subs x10,x10,#1 						//  /
+//	b.ne loop_delay1						// /
 	b leo_gpio								// si no se detecta un cambio en w22 se regresa a leo_gpio
 
 paint_dia_noche:
