@@ -20,9 +20,9 @@ loop_uh0:
 	stur w10,[x0]				    // Colorear el pixel N
 	add x0,x0,4                     // Siguiente pixel
 	sub x1,x1,1                     // Decrementar contador X
-	cbnz x1,loop_uh0                   // Si no terminó la fila, salto
+	cbnz x1,loop_uh0                // Si no terminó la fila, salto
 	sub x2,x2,1                     // Decrementar contador Y
-	cbnz x2,loop_uh1                   // Si no es la última fila, salto
+	cbnz x2,loop_uh1                // Si no es la última fila, salto
     
     ldr lr,[sp]
     ldr x1,[sp,#8]
@@ -192,6 +192,46 @@ set_pixel:
     ldr x21,[sp,#32]                // pop from sp
 
 
-    add sp,sp,#40               // free mem
+    add sp,sp,#40                   // free mem
     ret
     //----------------------------------------------- end set_pixel
+
+    //----------------------------------------------- delay_loop_mov
+delay_loop_mov:
+
+    sub sp,sp,#16
+    str lr,[sp]
+    str x2,[sp,#8]
+
+    mov x2,x1
+
+loop_delay_mov:
+	subs x2,x2,#1
+	b.ne loop_delay_mov
+
+    ldr lr,[sp]
+    ldr x2,[sp,#8]
+    
+    add sp,sp,#16
+    ret
+    //----------------------------------------------- end delay_loop_mov
+
+    //----------------------------------------------- delay_loop_GPIO
+delay_loop_GPIO:
+
+    sub sp,sp,#16
+    str lr,[sp]
+    str x1,[sp,#8]
+
+    mov x1,x2
+
+loop_delay_GPIO:
+	subs x1,x1,#1
+	b.ne loop_delay_GPIO
+
+    ldr lr,[sp]
+    ldr x1,[sp,#8]
+    
+    add sp,sp,#16
+    ret
+    //----------------------------------------------- end delay_loop_GPIO
