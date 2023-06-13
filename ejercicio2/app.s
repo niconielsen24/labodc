@@ -1,12 +1,15 @@
 	.include "graph_funs.s"
-	.include "anims.s"
+	//.include "anims.s"
 	.equ SCREEN_WIDTH,   640
 	.equ SCREEN_HEIGH,   480
 	.equ BITS_PER_PIXEL, 32
 
-	.equ GPIO_BASE,    0x3f200000
-	.equ GPIO_GPFSEL0, 0x00
-	.equ GPIO_GPLEV0,  0x34
+	.equ GPIO_BASE,    	0x3f200000
+	.equ GPIO_GPFSEL0, 	0x00
+	.equ GPIO_GPLEV0,  	0x34
+
+	.equ MV_SPEED,		0xff0000
+	.equ COLOR_BLACK,	0x0000 
 
 	.globl main
 
@@ -15,13 +18,12 @@ main:
 	mov x23, x0 // Guarda la dirección base del framebuffer en x20
 	//---------------- CODE HERE ------------------------------------
 
-	movz w10,#0x00ff,lsl 16					// Color blanco para el fondo
-	movk w10,#0xffff						//
+	mov w10,COLOR_BLACK						// Color para el fondo
 
 	bl background_paint						// colorea el fondo completo
 
-	movz w10,#0x0000,lsl 16					// color negro para el circulo
-	movk w10,#0x0000						//
+	movz w10,#0x00db,lsl 16					//	COLOR_OJO = 0xDBDDA1
+	movk w10,#0xdda1						//
 
 	mov x5,240								// posicion inicial circulo Y
 	mov x6,320								// posicion inicial circulo X
@@ -37,8 +39,7 @@ main:
 
 	str wzr, [x21, GPIO_GPFSEL0]			// Setea gpios 0 - 9 como lectura
 
-	movz x1,0x00ff ,lsl 16					// Seteo contador de ciclos para  
-	movk x1,0x0000							// delay de animaciones // speed_increase reduce este numero
+	mov x1, MV_SPEED						// delay de animaciones // speed_increase reduce este numero
 
 	// GPIO read loop
 	//
@@ -81,8 +82,7 @@ move_up:
 
 	bl delay_loop_mov						// --delay--
 
-	movz w10,#0x00ff,lsl 16					//
-	movk w10,#0xffff						//
+	mov w10,COLOR_BLACK					//
 
 	bl background_paint						//
 
@@ -92,8 +92,8 @@ move_up:
 	mov x5,0								//
 cont_mv_up:									//
 
-	movz w10,#0x0000,lsl 16					//
-	movk w10,#0x0000						//
+	movz w10,#0x00db,lsl 16					//	COLOR_OJO = 0xDBDDA1
+	movk w10,#0xdda1						//
 
 	bl paint_circle							//
 	b move_up								//
@@ -109,8 +109,7 @@ move_l:										//
 
 	bl delay_loop_mov						//
 
-	movz w10,#0x00ff,lsl 16					//
-	movk w10,#0xffff						//
+	mov w10,COLOR_BLACK					//
 
 	bl background_paint						//
 
@@ -120,8 +119,8 @@ move_l:										//
 	mov x6,0								//
 cont_mv_l:									//
 
-	movz w10,#0x0000,lsl 16					//
-	movk w10,#0x0000						//
+	movz w10,#0x00db,lsl 16					// COLOR_OJO = 0xDBDDA1
+	movk w10,#0xdda1						//
 
 	bl paint_circle							//
 	b move_l								//
@@ -137,8 +136,7 @@ move_r:										//
 
 	bl delay_loop_mov						//
 
-	movz w10,#0x00ff,lsl 16					//
-	movk w10,#0xffff						//
+	mov w10,COLOR_BLACK					//
 
 	bl background_paint						//
 
@@ -148,8 +146,8 @@ move_r:										//
 	mov x6,640								//
 cont_mv_r:									//
 
-	movz w10,#0x0000,lsl 16					//
-	movk w10,#0x0000						//
+	movz w10,#0x00db,lsl 16					// COLOR_OJO = 0xDBDDA1
+	movk w10,#0xdda1						//
 
 	bl paint_circle							//
 	b move_r								//
@@ -165,8 +163,7 @@ move_dwn:									//
 
 	bl delay_loop_mov						//
 
-	movz w10,#0x00ff,lsl 16					//
-	movk w10,#0xffff						//
+	mov w10,COLOR_BLACK					//
 
 	bl background_paint						//
 
@@ -177,8 +174,8 @@ move_dwn:									//
 cont_mv_dwn:
 
 
-	movz w10,#0x0000,lsl 16					//
-	movk w10,#0x0000						//
+	movz w10,#0x00db,lsl 16					// COLOR_OJO = 0xDBDDA1
+	movk w10,#0xdda1						//
 
 	bl paint_circle							//
 	b move_dwn								//
@@ -189,8 +186,13 @@ speed_increase:								//
 
 	cbz w28, leo_gpio						//
 
+	cbz x1,speed_null
 	sub x1,x1,1								//
+	b not_null
+speed_null:
+	mov x1, MV_SPEED
 
+not_null:
 	b speed_increase						//
 	//---------------------------------------------------------------
 	// Infinite Loop

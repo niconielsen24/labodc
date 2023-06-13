@@ -9,7 +9,6 @@
     // y oscureciendo el color principal
     // centro del sol (x6,x5) | (x,y)
     //
-    // por alguna razon no lo puedo hacer andar con un loop
 paint_sun:
     sub sp,sp,#48                   // mem alloc
     
@@ -62,6 +61,11 @@ paint_sun:
     //----------------------------------------------- end paint_sun 
 
     //----------------------------------------------- paint_moon
+    //
+    //
+    //  -- idem paint_sun --  
+    //
+    //
 paint_moon:
     sub sp,sp,#48                   // mem alloc
     str lr,[sp]                     // push to sp
@@ -79,7 +83,7 @@ paint_moon:
     mov x5,400                      // Y
     mov x6,550                      // X
 
-    mov x8,80                      // r
+    mov x8,80                       // r
     mul x7,x8,x8                    // r^2
 
     bl paint_circle
@@ -113,6 +117,11 @@ paint_moon:
 
 
     //----------------------------------------------- paint_sky_day
+    //
+    //  Pinta la mitad inferior de la pantalla de naranja 0xffe573 
+    //  Pinta la mitad superior de la pantalla de naranja 0xfffa99
+    //  pinta rayas en base a paint_line_hr de color naranja 0xffe573 en la parte superior
+    //
 paint_sky_day:
     sub sp,sp,#64                   // mem alloc
     str lr,[sp]                     // push to sp (stack pointer)
@@ -168,54 +177,54 @@ end_hor_line:
     //  idem paint_sky_day, solo difiere en colores
     //
 paint_sky_night:
-    sub sp,sp,#64
-    str lr,[sp]
-    str x16,[sp,#8]
-    str x20,[sp,#16]
-    str x10,[sp,#24]
-    str x11,[sp,#32]
-    str x15,[sp,#40]
+    sub sp,sp,#64                               // alloc mem
+    str lr,[sp]                                 // push to sp
+    str x16,[sp,#8]                             // push to sp
+    str x20,[sp,#16]                            // push to sp
+    str x10,[sp,#24]                            // push to sp
+    str x11,[sp,#32]                            // push to sp
+    str x15,[sp,#40]                            // push to sp
     
 
-    movz w10,#0x0019,lsl 16
-    movk w10,#0x1919
+    movz w10,#0x0019,lsl 16                     //
+    movk w10,#0x1919                            //
 
-    bl background_paint
+    bl background_paint                         //
 
-    movz w10,#0x004e,lsl 16
-    movk w10,#0x3f2d
+    movz w10,#0x004e,lsl 16                     //
+    movk w10,#0x3f2d                            //
 
-    bl upper_half
+    bl upper_half                               //
 
-    movz w10,#0x0019,lsl 16
-    movk w10,#0x1919
+    movz w10,#0x0019,lsl 16                     //
+    movk w10,#0x1919                            //
 
-    mov x16,0 
-	mov x20,640
-    mov x15,240                     
-    mov x11,0                       
+    mov x16,0                                   //
+	mov x20,640                                 //
+    mov x15,240                                 //                    
+    mov x11,0                                   //                
 
-loop_hor_lines_n:
-    cbz x15, end_hor_line_n
-    bl paint_line_hr
-    sub x15,x15,1
-    bl paint_line_hr
-    sub x15,x15,1
-    bl paint_line_hr
-    sub x15,x15,x11
-    add x11,x11,2
-    b loop_hor_lines_n
+loop_hor_lines_n:                               //
+    cbz x15, end_hor_line_n                     //
+    bl paint_line_hr                            //
+    sub x15,x15,1                               //
+    bl paint_line_hr                            //
+    sub x15,x15,1                               //
+    bl paint_line_hr                            //
+    sub x15,x15,x11                             //
+    add x11,x11,2                               //
+    b loop_hor_lines_n                          //
 
-end_hor_line_n:
+end_hor_line_n:                                 //
 
-    ldr lr,[sp]
-    ldr x8,[sp,#8]
-    ldr x9,[sp,#16]
-    ldr x11,[sp,#24]
-    ldr x10,[sp,#32]
-    ldr x12,[sp,#40]
+    ldr lr,[sp]                                 // pop from sp
+    ldr x8,[sp,#8]                              // pop from sp
+    ldr x9,[sp,#16]                             // pop from sp
+    ldr x11,[sp,#24]                            // pop from sp
+    ldr x10,[sp,#32]                            // pop from sp
+    ldr x12,[sp,#40]                            // pop from sp
 
-    add sp,sp,#64
+    add sp,sp,#64                               // mem free
     ret
     //----------------------------------------------- end paint_sky_night
 
@@ -364,136 +373,136 @@ paint_casita:
     mov x20,580                                     // end_line X
     mov x15,260                                     // altura inicial Y
 
-    movz w10,#0x00bb,lsl 16
-    movk w10,#0x9766
+    movz w10,#0x00bb,lsl 16                         //
+    movk w10,#0x9766                                //
 
-loop_casita_princ:
-    cmp x15,300
-    b.eq end_casita_princ
-    bl paint_line_hr
-    add x15,x15,1
-    b loop_casita_princ
-end_casita_princ:
+loop_casita_princ:                                  //
+    cmp x15,300                                     //
+    b.eq end_casita_princ                           //
+    bl paint_line_hr                                //
+    add x15,x15,1                                   //
+    b loop_casita_princ                             //
+end_casita_princ:                                   //
 
-    movz w10,#0x0095,lsl 16
-    movk w10,#0x7850
+    movz w10,#0x0095,lsl 16                         //
+    movk w10,#0x7850                                //
 
     mov x16,480                                     // start_line X
     mov x20,500                                     // end_line X
     mov x15,240                                     // altura inicial Y
 
-loop_casita_front:
-    cmp x15,300
-    b.eq end_casita_front
-    bl paint_line_hr
-    add x15,x15,1
-    b loop_casita_front
+loop_casita_front:                                  //
+    cmp x15,300                                     //
+    b.eq end_casita_front                           //
+    bl paint_line_hr                                //
+    add x15,x15,1                                   //
+    b loop_casita_front                             //
 
-end_casita_front:
+end_casita_front:                                   //
 
-    movz w10,#0x0097,lsl 16
-    movk w10,#0x641f
+    movz w10,#0x0097,lsl 16                         //
+    movk w10,#0x641f                                //
 
     mov x16,485                                     // start_line X
     mov x20,495                                     // end_line X
     mov x15,280                                     // altura inicial Y
 
-loop_casita_puerta:
-    cmp x15,300
-    b.eq end_casita_puerta
-    bl paint_line_hr
-    add x15,x15,1
-    b loop_casita_puerta
+loop_casita_puerta:                                 //
+    cmp x15,300                                     //
+    b.eq end_casita_puerta                          //
+    bl paint_line_hr                                //
+    add x15,x15,1                                   //
+    b loop_casita_puerta                            //
 
-end_casita_puerta:
+end_casita_puerta:                                  //
 
-    movz w10,#0x00ff,lsl 16
-    movk w10,#0xffff
+    movz w10,#0x00ff,lsl 16                         //
+    movk w10,#0xffff                                //
 
     mov x16,510                                     // start_line X
     mov x20,530                                     // end_line X
     mov x15,275                                     // altura inicial Y
 
-loop_casita_ventana_0:
-    cmp x15,295
-    b.eq end_casita_ventana_0
-    bl paint_line_hr
-    add x15,x15,1
-    b loop_casita_ventana_0
+loop_casita_ventana_0:                              //
+    cmp x15,295                                     //
+    b.eq end_casita_ventana_0                       //
+    bl paint_line_hr                                //
+    add x15,x15,1                                   //
+    b loop_casita_ventana_0                         //
 
-end_casita_ventana_0:
+end_casita_ventana_0:                               //
 
     mov x16,550                                     // start_line X
     mov x20,570                                     // end_line X
     mov x15,275                                     // altura inicial Y
 
-loop_casita_ventana_1:
-    cmp x15,295
-    b.eq end_casita_ventana_1
-    bl paint_line_hr
-    add x15,x15,1
-    b loop_casita_ventana_1
+loop_casita_ventana_1:                              //
+    cmp x15,295                                     //
+    b.eq end_casita_ventana_1                       //
+    bl paint_line_hr                                //
+    add x15,x15,1                                   //
+    b loop_casita_ventana_1                         //
 
-end_casita_ventana_1:
+end_casita_ventana_1:                               //
 
-    movz w10,#0x005a,lsl 16
-    movk w10,#0x1f15
+    movz w10,#0x005a,lsl 16                         //
+    movk w10,#0x1f15                                //
 
     mov x16,480                                     // start_line X
     mov x20,500                                     // end_line X
     mov x15,240                                     // altura inicial Y
 
-loop_casita_techo_back:
-    cmp x15,260
-    b.eq end_casita_techo_back
-    bl paint_line_hr
-    add x15,x15,1
-    sub x16,x16,1
-    sub x20,x20,1
-    b loop_casita_techo_back
+loop_casita_techo_back:                             //
+    cmp x15,260                                     //
+    b.eq end_casita_techo_back                      //
+    bl paint_line_hr                                //
+    add x15,x15,1                                   //
+    sub x16,x16,1                                   //
+    sub x20,x20,1                                   //
+    b loop_casita_techo_back                        //
 
-end_casita_techo_back:
+end_casita_techo_back:                              //
 
-    movz w10,#0x0097,lsl 16
-    movk w10,#0x2f1f
+    movz w10,#0x0097,lsl 16                         //
+    movk w10,#0x2f1f                                //
 
     mov x16,480                                     // start_line X
     mov x20,580                                     // end_line X
     mov x15,240                                     // altura inicial Y
 
-loop_casita_techo_princ:
-    cmp x15,260
-    b.eq end_casita_techo_princ
-    bl paint_line_hr
-    add x15,x15,1
-    add x16,x16,1
-    add x20,x20,1
-    b loop_casita_techo_princ
+loop_casita_techo_princ:                            //
+    cmp x15,260                                     //
+    b.eq end_casita_techo_princ                     //
+    bl paint_line_hr                                //
+    add x15,x15,1                                   //
+    add x16,x16,1                                   //
+    add x20,x20,1                                   //
+    b loop_casita_techo_princ                       //
 
-end_casita_techo_princ:
+end_casita_techo_princ:                             //
 
     mov x16,560                                     // start_line X
     mov x20,570                                     // end_line X
     mov x15,225                                     // altura inicial Y
 
-    movz w10,#0x0050,lsl 16
-    movk w10,#0x4645
+    movz w10,#0x0050,lsl 16                         //
+    movk w10,#0x4645                                //
 
-loop_casita_chim:
-    cmp x15,250
-    b.eq end_casita_chim
-    bl paint_line_hr
-    add x15,x15,1
-    b loop_casita_chim
+loop_casita_chim:                                   //
+    cmp x15,250                                     //
+    b.eq end_casita_chim                            //
+    bl paint_line_hr                                //
+    add x15,x15,1                                   //
+    b loop_casita_chim                              //
 
-end_casita_chim:
+end_casita_chim:                                    //
 
-    ldr lr,[sp]
-    ldr x10,[sp,#8]
-    ldr x15,[sp,#16]
-    ldr x16,[sp,#24]
-    ldr x20,[sp,#32]
+    ldr lr,[sp]                                     //
+    ldr x10,[sp,#8]                                 //
+    ldr x15,[sp,#16]                                //
+    ldr x16,[sp,#24]                                //
+    ldr x20,[sp,#32]                                //
 
-    add sp,sp,#40
+    add sp,sp,#40                                   //
     ret
     //----------------------------------------------- end paint_casita

@@ -2,13 +2,24 @@
 	.equ SCREEN_HEIGH,   480
     .equ BITS_PER_PIXEL, 32
 
-    //----------------------------------------------- lower half paint
+    //----------------------------------------------- graph functions list
+    //
+    // >>>> ln 16  : upper_half
+    //
+    // >>>> ln 47  : background_paint
+    //
+    // >>>> ln 77  : paint_circle
+    //
+    // >>>> ln 122 : paint_line_hr
+    //
+    // >>>> ln 167 : set_pixel (--no se usa--)
+    //----------------------------------------------- upper_half
 upper_half:
     sub sp,sp,#32                   // mem alloc
-    str lr,[sp]
-    str x1,[sp,#8]
-    str x2,[sp,#16]
-    str x0,[sp,#24]
+    str lr,[sp]                     // push to sp
+    str x1,[sp,#8]                  // push to sp
+    str x2,[sp,#16]                 // push to sp
+    str x0,[sp,#24]                 // push to sp
 
     mov x0,x23
 
@@ -17,30 +28,29 @@ upper_half:
 loop_uh1: 
 	mov x1, SCREEN_WIDTH            // X Size
 loop_uh0:
-	stur w10,[x0]				    // Colorear el pixel N
-	add x0,x0,4                     // Siguiente pixel
-	sub x1,x1,1                     // Decrementar contador X
-	cbnz x1,loop_uh0                   // Si no terminó la fila, salto
-	sub x2,x2,1                     // Decrementar contador Y
-	cbnz x2,loop_uh1                   // Si no es la última fila, salto
+	stur w10,[x0]				     // Colorear el pixel N
+	add x0,x0,4                      // Siguiente pixel
+	sub x1,x1,1                      // Decrementar contador X
+	cbnz x1,loop_uh0                 // Si no terminó la fila, salto
+	sub x2,x2,1                      // Decrementar contador Y
+	cbnz x2,loop_uh1                 // Si no es la última fila, salto
     
-    ldr lr,[sp]
-    ldr x1,[sp,#8]
-    ldr x2,[sp,#16]
-    ldr x0,[sp,#24]
-    add sp,sp,#32
+    ldr lr,[sp]                      // pop from sp                
+    ldr x1,[sp,#8]                   // pop from sp
+    ldr x2,[sp,#16]                  // pop from sp
+    ldr x0,[sp,#24]                  // pop from sp
+    add sp,sp,#32                    // mem free
     ret
+    //----------------------------------------------- end upper_half
 
-    //----------------------------------------------- end lower falf paint
 
-
-    //----------------------------------------------- background paint
+    //----------------------------------------------- background_paint
 background_paint:
     sub sp,sp,#32                   // mem alloc
-    str lr,[sp]
-    str x1,[sp,#8]
-    str x2,[sp,#16]
-    str x0,[sp,#24]
+    str lr,[sp]                     // push to sp
+    str x1,[sp,#8]                  // push to sp
+    str x2,[sp,#16]                 // push to sp
+    str x0,[sp,#24]                 // push to sp
 
     mov x0,x23
 
@@ -55,25 +65,25 @@ loop0:
 	sub x2,x2,1                     // Decrementar contador Y
 	cbnz x2,loop1                   // Si no es la última fila, salto
     
-    ldr lr,[sp]
-    ldr x1,[sp,#8]
-    ldr x2,[sp,#16]
-    ldr x0,[sp,#24]
-    add sp,sp,#32
+    ldr lr,[sp]                     // pop from sp
+    ldr x1,[sp,#8]                  // pop from sp
+    ldr x2,[sp,#16]                 // pop from sp
+    ldr x0,[sp,#24]                 // pop from sp
+    add sp,sp,#32                   // mem free
     ret
-    //----------------------------------------------- end background paint
+    //----------------------------------------------- end background_paint
 
 
-    //----------------------------------------------- paint circle
+    //----------------------------------------------- paint_circle
 paint_circle:
     sub sp,sp,#48                   // mem alloc
 
-    str lr,[sp]
-    str x8,[sp,#8]
-    str x9,[sp,#16]
-    str x1,[sp,#24]  
-    str x2,[sp,#32]
-    str x0,[sp,#40]  
+    str lr,[sp]                     // push to sp
+    str x8,[sp,#8]                  // push to sp
+    str x9,[sp,#16]                 // push to sp
+    str x1,[sp,#24]                 // push to sp 
+    str x2,[sp,#32]                 // push to sp
+    str x0,[sp,#40]                 // push to sp 
 
     movz x8,0                       // init a 0
     movz x9,0                       // init a 0
@@ -98,19 +108,18 @@ cont_crc:
 	sub x2,x2,1                     // Decrementar contador Y
 	cbnz x2,loop1_crc               // Si no es la última fila, salto  
 
-    ldr lr,[sp]
-    ldr x8,[sp,#8]
-    ldr x9,[sp,#16]
-    ldr x1,[sp,#24]  
-    ldr x2,[sp,#32]
-    ldr x0,[sp,#40]  
-
+    ldr lr,[sp]                     // pop from sp
+    ldr x8,[sp,#8]                  // pop from sp
+    ldr x9,[sp,#16]                 // pop from sp
+    ldr x1,[sp,#24]                 // pop from sp 
+    ldr x2,[sp,#32]                 // pop from sp
+    ldr x0,[sp,#40]                 // pop from sp 
 
     add sp,sp,#48                   // free mem
     ret
-    //----------------------------------------------- end paint circle
+    //----------------------------------------------- end paint_circle
 
-    //----------------------------------------------- paint line_hr
+    //----------------------------------------------- paint_line_hr
     //
     //
     //
@@ -190,7 +199,6 @@ set_pixel:
     ldr x1,[sp,#16]                 // pop from sp
     ldr x20,[sp,#24]                // pop from sp
     ldr x21,[sp,#32]                // pop from sp
-
 
     add sp,sp,#40               // free mem
     ret
