@@ -1,5 +1,4 @@
-	.include "graph_funs.s"
-	//.include "anims.s"
+	.include "anims.s"
 	.equ SCREEN_WIDTH,   640
 	.equ SCREEN_HEIGH,   480
 	.equ BITS_PER_PIXEL, 32
@@ -8,8 +7,9 @@
 	.equ GPIO_GPFSEL0, 	0x00
 	.equ GPIO_GPLEV0,  	0x34
 
-	.equ MV_SPEED,		0xff0000
-	.equ COLOR_BLACK,	0x0000 
+	.equ MV_SPEED_FAST, 		0x0f0000
+	.equ MV_SPEED_NORMAL,		0x4f0000
+	.equ COLOR_BLACK,			0x0000 
 
 	.globl main
 
@@ -18,19 +18,15 @@ main:
 	mov x23, x0 // Guarda la dirección base del framebuffer en x20
 	//---------------- CODE HERE ------------------------------------
 
-	mov w10,COLOR_BLACK						// Color para el fondo
+	mov x15,10								// initial config Y for paint_ground
+	mov x16,680								// initial config X for paint_ground
 
-	bl background_paint						// colorea el fondo completo
+	mov x8,SCREEN_HEIGH						// initial config Y
+	mov x9,SCREEN_WIDTH						// initial config X
+	lsr x8,x8,1								// initial config Y
+	lsr x9,x9,1								// initial config X
 
-	movz w10,#0x00db,lsl 16					//	COLOR_OJO = 0xDBDDA1
-	movk w10,#0xdda1						//
-
-	mov x5,240								// posicion inicial circulo Y
-	mov x6,320								// posicion inicial circulo X
-	mov x8,50								// Radio
-	mul x7,x8,x8							// R^2
-
-	bl paint_circle							// circulo inicial
+	bl paint_ground							// init paint ground
 
 	// GPIO config set
 	//
@@ -39,161 +35,50 @@ main:
 
 	str wzr, [x21, GPIO_GPFSEL0]			// Setea gpios 0 - 9 como lectura
 
-	mov x1, MV_SPEED						// delay de animaciones // speed_increase reduce este numero
+	mov x1, MV_SPEED_NORMAL					// delay de animaciones
 
 	// GPIO read loop
 	//
 
 leo_gpio:									// si no se lee ningun input en el pin 1 se regresa a esta linea
-	movz x2,0xE100							// Seteo contador de ciclos para  
-	movk x2,0x05f5 ,lsl 16					// delay del loop que lee GPIO
+	mov x2,0xE100							// Seteo contador de ciclos para  
+											// delay del loop que lee GPIO
 	
 	bl delay_loop_GPIO						// --delay--
 
+	mov x7,0								// set move flag to not moving
+	bl paint_ground
+
 	ldr w22, [x21,GPIO_GPLEV0]				// Lee el estado de los GPIO 0 - 31
 
-	and w24,w22,0b00000010					// 0b00000010 = w, aislamos el estado de W
-	cbnz w24, move_up						// si se presiona W se mueve hacia arriba
-
-	and w25,w22,0b00000100					// 0b00000100 = A, aislamos el estado de A
-	cbnz w25, move_l						// si se presiona A se mueve hacia la izquierda
-
-	and w26,w22,0b00001000					// 0b00001000 = S, aislamos el estado de S
-	cbnz w26, move_dwn						// si se presiona S se mueve hacia abajo
-
-	and w27,w22,0b00010000					// 0b00010000 = D, aislamos el estado de D
-	cbnz w27, move_r						// si se presiona S se mueve hacia la izquierda
+	and w24,w22,0b00011110					// 0b00000010 = w, 0b00000100 = A, 0b00001000 = S, 0b00010000 = D
+	cbnz w24, move							// 
 
 	and w28,w22,0b00100000					// 0b00100000 = [SPACE_BAR], aislamos el estado de [SPACE_BAR]
-	cbnz w28, speed_increase
+	cbnz w28, speed
 
 	b leo_gpio								// si no se detecta un cambio en w22 se regresa a leo_gpio
 
 	//---------------- ANIMATIONS ------------------------------------
+move:
+	mov x7,1								// set move flag to moving
+	bl move_anim							// move animations
+	b leo_gpio								// loop back to leo_gpio
 
-move_up:
+speed:
+
 	ldr w22, [x21,GPIO_GPLEV0]				// Lee el estado de los GPIO 0 - 31
-	and w24,w22,0b00000010					// Con esta mascara nos aseguramos de que W se mantenga presionada
-											// para solo efectuar cambios si se mantiene
-	cbz w24, leo_gpio						// caso contrario regresamos a leo_gpio
+	and w28,w22,0b00100000					// asegura que [SPACE_BAR] se mantiene presionada
+	cbz w28,leo_gpio						// si [SPACE_BAR] no esta presionada volvemos a leo_gpio
 
-	mov x8,50
-	mul x7,x8,x8
-
-	bl delay_loop_mov						// --delay--
-
-	mov w10,COLOR_BLACK					//
-
-	bl background_paint						//
-
-	add x5,x5,5								//		
-	cmp x5,480								//
-	b.ne cont_mv_up							//
-	mov x5,0								//
-cont_mv_up:									//
-
-	movz w10,#0x00db,lsl 16					//	COLOR_OJO = 0xDBDDA1
-	movk w10,#0xdda1						//
-
-	bl paint_circle							//
-	b move_up								//
-
-move_l:										//
-	ldr w22, [x21,GPIO_GPLEV0]				// Lee el estado de los GPIO 0 - 31
-	and w25,w22,0b00000100					// 
-
-	cbz w25, leo_gpio						//
-
-	mov x8,50								//
-	mul x7,x8,x8							//
-
-	bl delay_loop_mov						//
-
-	mov w10,COLOR_BLACK					//
-
-	bl background_paint						//
-
-	add x6,x6,5								//
-	cmp x6,640								//
-	b.ne cont_mv_l							//
-	mov x6,0								//
-cont_mv_l:									//
-
-	movz w10,#0x00db,lsl 16					// COLOR_OJO = 0xDBDDA1
-	movk w10,#0xdda1						//
-
-	bl paint_circle							//
-	b move_l								//
-
-move_r:										//
-	ldr w22, [x21,GPIO_GPLEV0]				// Lee el estado de los GPIO 0 - 31
-	and w27,w22,0b00010000					// 
-
-	cbz w27, leo_gpio						//
-
-	mov x8,50								//
-	mul x7,x8,x8							//
-
-	bl delay_loop_mov						//
-
-	mov w10,COLOR_BLACK					//
-
-	bl background_paint						//
-
-	sub x6,x6,5								//
-	cmp x6,0								//
-	b.ne cont_mv_r							//
-	mov x6,640								//
-cont_mv_r:									//
-
-	movz w10,#0x00db,lsl 16					// COLOR_OJO = 0xDBDDA1
-	movk w10,#0xdda1						//
-
-	bl paint_circle							//
-	b move_r								//
-
-move_dwn:									//
-	ldr w22, [x21,GPIO_GPLEV0]				// Lee el estado de los GPIO 0 - 31
-	and w26,w22,0b00001000					// 
-
-	cbz w26, leo_gpio						//
-
-	mov x8,50								//
-	mul x7,x8,x8							//
-
-	bl delay_loop_mov						//
-
-	mov w10,COLOR_BLACK					//
-
-	bl background_paint						//
-
-	sub x5,x5,5								//
-	cmp x5,0
-	b.ne cont_mv_dwn
-	mov x5,480
-cont_mv_dwn:
-
-
-	movz w10,#0x00db,lsl 16					// COLOR_OJO = 0xDBDDA1
-	movk w10,#0xdda1						//
-
-	bl paint_circle							//
-	b move_dwn								//
-
-speed_increase:								//
-	ldr w22, [x21,GPIO_GPLEV0]				// Lee el estado de los GPIO 0 - 31
-	and w28,w22,0b00100000					// 
-
-	cbz w28, leo_gpio						//
-
-	cbz x1,speed_null
-	sub x1,x1,1								//
-	b not_null
-speed_null:
-	mov x1, MV_SPEED
-
-not_null:
-	b speed_increase						//
+	cmp x1,MV_SPEED_FAST					// \
+	b.eq go_to_norm							//	\
+	mov x1,MV_SPEED_FAST					// 	 \
+	b leo_gpio								//	  } cambia entre las 2 velocidades para move_anim
+go_to_norm:									//	 /
+	mov x1,MV_SPEED_NORMAL					//	/
+	b leo_gpio								// /
+	
 	//---------------------------------------------------------------
 	// Infinite Loop
 InfLoop:

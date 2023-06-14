@@ -1,14 +1,27 @@
 	.equ SCREEN_WIDTH,   640
 	.equ SCREEN_HEIGH,   480
     .equ BITS_PER_PIXEL, 32
-
-    //----------------------------------------------- lower half paint
+    //----------------------------------------------- graph functions list
+    //
+    // >>>> ln 19         : upper_half
+    //
+    // >>>> ln 50         : background_paint
+    //
+    // >>>> ln 80         : paint_circle
+    //
+    // >>>> ln 129        : paint_line_hr
+    //
+    // >>>> ln 174        : set_pixel
+    //
+    // >>>> ln 211 to EOF : delay loops for GPIO and animations
+    //
+    //----------------------------------------------- upper_half
 upper_half:
     sub sp,sp,#32                   // mem alloc
-    str lr,[sp]
-    str x1,[sp,#8]
-    str x2,[sp,#16]
-    str x0,[sp,#24]
+    str lr,[sp]                     // push to sp
+    str x1,[sp,#8]                  // push to sp
+    str x2,[sp,#16]                 // push to sp
+    str x0,[sp,#24]                 // push to sp
 
     mov x0,x23
 
@@ -24,23 +37,22 @@ loop_uh0:
 	sub x2,x2,1                     // Decrementar contador Y
 	cbnz x2,loop_uh1                // Si no es la última fila, salto
     
-    ldr lr,[sp]
-    ldr x1,[sp,#8]
-    ldr x2,[sp,#16]
-    ldr x0,[sp,#24]
-    add sp,sp,#32
+    ldr lr,[sp]                     // pop from sp
+    ldr x1,[sp,#8]                  // pop from sp
+    ldr x2,[sp,#16]                 // pop from sp
+    ldr x0,[sp,#24]                 // pop from sp
+    add sp,sp,#32                   // free mem
     ret
 
-    //----------------------------------------------- end lower falf paint
+    //----------------------------------------------- end upper_half
 
-
-    //----------------------------------------------- background paint
+    //----------------------------------------------- background_paint
 background_paint:
     sub sp,sp,#32                   // mem alloc
-    str lr,[sp]
-    str x1,[sp,#8]
-    str x2,[sp,#16]
-    str x0,[sp,#24]
+    str lr,[sp]                     // push to sp
+    str x1,[sp,#8]                  // push to sp
+    str x2,[sp,#16]                 // push to sp
+    str x0,[sp,#24]                 // push to sp
 
     mov x0,x23
 
@@ -55,25 +67,25 @@ loop0:
 	sub x2,x2,1                     // Decrementar contador Y
 	cbnz x2,loop1                   // Si no es la última fila, salto
     
-    ldr lr,[sp]
-    ldr x1,[sp,#8]
-    ldr x2,[sp,#16]
-    ldr x0,[sp,#24]
-    add sp,sp,#32
+    ldr lr,[sp]                     // pop from sp
+    ldr x1,[sp,#8]                  // pop from sp
+    ldr x2,[sp,#16]                 // pop from sp
+    ldr x0,[sp,#24]                 // pop from sp
+    add sp,sp,#32                   // free mem
     ret
-    //----------------------------------------------- end background paint
+    //----------------------------------------------- end background_paint
 
 
-    //----------------------------------------------- paint circle
+    //----------------------------------------------- paint_circle
 paint_circle:
     sub sp,sp,#48                   // mem alloc
 
-    str lr,[sp]
-    str x8,[sp,#8]
-    str x9,[sp,#16]
-    str x1,[sp,#24]  
-    str x2,[sp,#32]
-    str x0,[sp,#40]  
+    str lr,[sp]                     // push to sp 
+    str x8,[sp,#8]                  // push to sp 
+    str x9,[sp,#16]                 // push to sp
+    str x1,[sp,#24]                 // push to sp  
+    str x2,[sp,#32]                 // push to sp
+    str x0,[sp,#40]                 // push to sp 
 
     movz x8,0                       // init a 0
     movz x9,0                       // init a 0
@@ -98,19 +110,19 @@ cont_crc:
 	sub x2,x2,1                     // Decrementar contador Y
 	cbnz x2,loop1_crc               // Si no es la última fila, salto  
 
-    ldr lr,[sp]
-    ldr x8,[sp,#8]
-    ldr x9,[sp,#16]
-    ldr x1,[sp,#24]  
-    ldr x2,[sp,#32]
-    ldr x0,[sp,#40]  
+    ldr lr,[sp]                     // pop from sp
+    ldr x8,[sp,#8]                  // pop from sp
+    ldr x9,[sp,#16]                 // pop from sp
+    ldr x1,[sp,#24]                 // pop from sp 
+    ldr x2,[sp,#32]                 // pop from sp
+    ldr x0,[sp,#40]                 // pop from sp 
 
 
     add sp,sp,#48                   // free mem
     ret
-    //----------------------------------------------- end paint circle
+    //----------------------------------------------- end paint_circle
 
-    //----------------------------------------------- paint line_hr
+    //----------------------------------------------- paint_line_hr
     //
     //
     //
@@ -153,12 +165,11 @@ end_line:
 
     add sp,sp,#64                       // mem free
     ret
-    //----------------------------------------------- end paint line_hr
+    //----------------------------------------------- end paint_line_hr
 
     //----------------------------------------------- set_pixel
     //
-    //  funciona pero no tiene uso  ^\(,_,)/^
-    //
+    // pinta el pixel especificado por x16,x15 (x16,x15) = (x,y) 
     // 
 set_pixel:
     sub sp,sp,#40                   // mem alloc
@@ -235,3 +246,24 @@ loop_delay_GPIO:
     add sp,sp,#16
     ret
     //----------------------------------------------- end delay_loop_GPIO
+
+    //----------------------------------------------- delay_loop_ground
+delay_loop_ground:
+
+    sub sp,sp,#16
+    str lr,[sp]
+    str x1,[sp,#8]
+
+    movz x1,0x00ff,lsl 16
+    movk x1,0xffff
+
+loop_delay_ground:
+	subs x1,x1,#1
+	b.ne loop_delay_ground
+
+    ldr lr,[sp]
+    ldr x1,[sp,#8]
+    
+    add sp,sp,#16
+    ret
+    //----------------------------------------------- end delay_loop_ground
